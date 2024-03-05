@@ -36,4 +36,9 @@ public class TowerController {
 		return towers;
 	}
 
+	@GetMapping("/hello")
+	public String hello() {
+		return "Hello";
+	}
+
 }
