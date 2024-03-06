@@ -29,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
-	private static final String[] AUTH_WHITELIST = { "/login", "/authenticate", "/hello", "/public/signup",
+	private static final String[] AUTH_WHITELIST = { "/login", "/authenticate", "/tower/hello", "/public/signup",
 			"/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**", "/user" };
 
 	@Autowired
