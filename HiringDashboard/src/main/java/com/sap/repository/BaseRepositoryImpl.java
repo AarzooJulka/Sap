@@ -4,11 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import com.sap.seq.BaseEntity;
-import com.sap.user.User;
 
 public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<T> {
 	@Autowired
@@ -46,11 +44,4 @@ public class BaseRepositoryImpl<T extends BaseEntity> implements BaseRepository<
 		}
 	}
 
-	@Override
-	public User getByEmail(String email) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where("email").is(email));
-		return mongoTemplate.findOne(query, User.class);
-
-	}
 }
