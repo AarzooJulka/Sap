@@ -8,4 +8,6 @@ public interface TowerService extends BaseService<Tower> {
 
 	boolean importExcel(MultipartFile excel);
 
+	TowerDataWrapper getTower();
+
 }

@@ -1,7 +1,5 @@
 package com.sap.tower;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +32,15 @@ public class TowerController {
 
 	@GetMapping()
 	@CrossOrigin
-	public List<Tower> getAllTowers() {
-		List<Tower> towers = towerService.getAll();
-		return towers;
+	public TowerDataWrapper getAll() {
+		TowerDataWrapper tower = towerService.getTower();
+		return tower;
+	}
+
+	@GetMapping("/hello")
+	@CrossOrigin
+	public String hello() {
+		return "Hello";
 	}
 
 }

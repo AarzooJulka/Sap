@@ -50,27 +50,46 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 
 	public void saveDetails(XSSFRow row) {
 		Tower tower = new Tower();
-		tower.setTowerNumber(getStringValue(row.getCell(0)));
-		tower.setTowerName(getStringValue(row.getCell(1)));
-		tower.setTowerColor(getStringValue(row.getCell(2)));
-		tower.setSpiralTarget(getStringValue(row.getCell(3)));
-		tower.setSkillsCount(getStringValue(row.getCell(4)));
-		tower.setTopManager1(getStringValue(row.getCell(6)));
-		tower.setTopManager2(getStringValue(row.getCell(7)));
-		tower.setGreenManager(getStringValue(row.getCell(8)));
-		tower.setRedManager(getStringValue(row.getCell(9)));
-		tower.setFloorCount(getStringValue(row.getCell(10)));
-		tower.setWindowCount(getStringValue(row.getCell(11)));
-		tower.setOutlinedWindow(getStringValue(row.getCell(12)));
-		tower.setEmptyWindow(getStringValue(row.getCell(13)));
-		tower.setBrokenWindow(getStringValue(row.getCell(14)));
-		tower.setIlluminatedWindow(getStringValue(row.getCell(15)));
-		tower.setOccupiedWindow(getStringValue(row.getCell(16)));
-		tower.setTarget(getStringValue(row.getCell(17)));
-		List<Skill> skills = saveSkill(getStringValue(row.getCell(5)));
-		List<Floor> floors = saveFloor(row);
-		tower.setFloorDetails(floors);
-		tower.setSkillDetails(skills);
+		if (getStringValue(row.getCell(0)).startsWith("Tower")) {
+			tower.setTowerNumber(getStringValue(row.getCell(0)));
+			tower.setTowerName(getStringValue(row.getCell(1)));
+			tower.setTowerColor(getStringValue(row.getCell(2)));
+			tower.setSpiralTarget(getStringValue(row.getCell(2)));
+			tower.setSkillsCount(getStringValue(row.getCell(4)));
+			tower.setTopManager1(getStringValue(row.getCell(6)));
+			tower.setTopManager2(getStringValue(row.getCell(7)));
+			tower.setGreenManager(getStringValue(row.getCell(8)));
+			tower.setRedManager(getStringValue(row.getCell(9)));
+			tower.setFloorCount(getStringValue(row.getCell(10)));
+			tower.setWindowCount(getStringValue(row.getCell(11)));
+			tower.setOutlinedWindow(getStringValue(row.getCell(12)));
+			tower.setEmptyWindow(getStringValue(row.getCell(13)));
+			tower.setBrokenWindow(getStringValue(row.getCell(14)));
+			tower.setIlluminatedWindow(getStringValue(row.getCell(15)));
+			tower.setOccupiedWindow(getStringValue(row.getCell(16)));
+			tower.setTarget(getStringValue(row.getCell(17)));
+			List<Skill> skills = saveSkill(getStringValue(row.getCell(5)));
+			List<Floor> floors = saveFloor(row);
+			tower.setFloorDetails(floors);
+			tower.setSkillDetails(skills);
+		} else if (getStringValue(row.getCell(0)).equalsIgnoreCase("Totals")) {
+			System.out.println("Inside Total");
+			System.out.println(getStringValue(row.getCell(12)));
+			List<String> topManagers = new ArrayList<>();
+			TowerData data = new TowerData();
+			tower.setTowerNumber(getStringValue(row.getCell(0)));
+			data.setTotalOfferAccepted(getStringValue(row.getCell(12)));
+			data.setTotalOnboarded(getStringValue(row.getCell(13)));
+			data.setTotalOfferExtended(getStringValue(row.getCell(14)));
+			data.setActualOfferAccepted(getStringValue(row.getCell(15)));
+			data.setActualOfferExtended(getStringValue(row.getCell(16)));
+			data.setActualOnboarded(getStringValue(row.getCell(17)));
+			topManagers.add(getStringValue(row.getCell(6)));
+			topManagers.add(getStringValue(row.getCell(7)));
+			data.setTopManagers(topManagers);
+			tower.setTowerData(data);
+
+		}
 		super.save(tower);
 	}
 
@@ -100,6 +119,30 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 			savedSkills.add(skill);
 		}
 		return savedSkills;
+	}
+
+	@Override
+	public TowerDataWrapper getTower() {
+		TowerDataWrapper dataWrapper = new TowerDataWrapper();
+		List<Tower> towers = getAll();
+		List<Tower> towerDetails = new ArrayList<>();
+		TowerData data = new TowerData();
+		for (Tower tower : towers) {
+			if (tower.getTowerNumber().startsWith("Tower")) {
+				towerDetails.add(tower);
+				dataWrapper.setTowerDetails(towerDetails);
+			} else if (tower.getTowerNumber().equals("Totals")) {
+				data.setActualOfferAccepted(tower.getTowerData().getActualOfferAccepted());
+				data.setActualOfferExtended(tower.getTowerData().getActualOfferExtended());
+				data.setActualOnboarded(tower.getTowerData().getActualOnboarded());
+				data.setTotalOfferAccepted(tower.getTowerData().getTotalOfferAccepted());
+				data.setTotalOfferExtended(tower.getTowerData().getTotalOfferExtended());
+				data.setTotalOnboarded(tower.getTowerData().getTotalOnboarded());
+				data.setTopManagers(tower.getTowerData().getTopManagers());
+				dataWrapper.setTowerData(data);
+			}
+		}
+		return dataWrapper;
 	}
 
 }
