@@ -35,7 +35,7 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 		try {
 			XSSFWorkbook workbook = new XSSFWorkbook(excel.getInputStream());
 			XSSFSheet sheet = workbook.getSheetAt(0);
-			for (int i = 2; i < sheet.getPhysicalNumberOfRows(); i++) {
+			for (int i = 3; i < sheet.getPhysicalNumberOfRows(); i++) {
 				XSSFRow row = sheet.getRow(i);
 				saveDetails(row);
 			}
@@ -70,34 +70,13 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 			tower.setBrokenWindow(getStringValue(row.getCell(14)));
 			tower.setIlluminatedWindow(getStringValue(row.getCell(15)));
 			tower.setOccupiedWindow(getStringValue(row.getCell(16)));
-			tower.setTarget(getStringValue(row.getCell(17)));
+			// tower.setTarget(getStringValue(row.getCell(17)));
 			List<Skill> skills = saveSkill(getStringValue(row.getCell(5)));
 			List<Floor> floors = saveFloor(row);
 			tower.setFloorDetails(floors);
 			tower.setSkillDetails(skills);
-		} else {
-			if (cellValue.equalsIgnoreCase("Total Onboarded")) {
-				tower.setTowerNumber("Total Onboarded");
-				data.setTotalOnboarded(getStringValue(row.getCell(1)));
-			} else if (cellValue.equalsIgnoreCase("Actual onboarded")) {
-				tower.setTowerNumber("Actual onboarded");
-				data.setActualOnboarded(getStringValue(row.getCell(1)));
-			} else if (cellValue.equalsIgnoreCase("Total Offers Accepted")) {
-				tower.setTowerNumber("Total Offers Accepted");
-				data.setTotalOfferAccepted(getStringValue(row.getCell(1)));
-			} else if (cellValue.equalsIgnoreCase("Actual Offers Accepted")) {
-				tower.setTowerNumber("Actual Offers Accepted");
-				data.setActualOfferAccepted(getStringValue(row.getCell(1)));
-			} else if (cellValue.equalsIgnoreCase("Total Offers Released")) {
-				tower.setTowerNumber("Total Offers Released");
-				data.setTotalOfferReleased(getStringValue(row.getCell(1)));
-			} else if (cellValue.equalsIgnoreCase("Actual Offers Released")) {
-				tower.setTowerNumber("Actual Offers Released");
-				data.setActualOfferReleased(getStringValue(row.getCell(1)));
-			}
 		}
 
-		tower.setTowerData(data);
 		super.save(tower);
 	}
 
@@ -107,10 +86,10 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 
 	private List<Floor> saveFloor(XSSFRow row) {
 		List<Floor> savedFloors = new ArrayList<>();
-		for (int i = 18; i < 43; i += 5) {
+		for (int i = 22; i < 46; i += 5) {
 			Floor floor = new Floor(getStringValue(row.getCell(i)), getStringValue(row.getCell(i + 1)),
 					getStringValue(row.getCell(i + 2)), getStringValue(row.getCell(i + 3)),
-					getStringValue(row.getCell(i + 4)), "Floor " + ((i - 18) / 5 + 1));
+					getStringValue(row.getCell(i + 4)), "Floor " + ((i - 22) / 5 + 1));
 			savedFloors.add(floor);
 		}
 		return savedFloors;
@@ -129,41 +108,50 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 		return savedSkills;
 	}
 
-	@Override
 	public TowerDataWrapper getTower() {
 		TowerDataWrapper dataWrapper = new TowerDataWrapper();
 		List<Tower> towers = getAll();
 		List<Tower> towerDetails = new ArrayList<>();
 		List<String> topManagers = new ArrayList<>();
 		TowerData data = new TowerData();
+		double totalOnboarded = 0;
+		double actualOnboarded = 0;
+		double actualOfferAccepted = 0;
+		double actualOfferReleased = 0;
+
 		for (Tower tower : towers) {
-			if (tower.getTowerNumber().startsWith("Tower")) {
-				towerDetails.add(tower);
-				topManagers.add(tower.getTopManager1());
-				dataWrapper.setTowerDetails(towerDetails);
-			} else {
-				if (tower.getTowerNumber().equals("Total Onboarded")) {
-					data.setTotalOnboarded(tower.getTowerData().getTotalOnboarded());
-				} else if (tower.getTowerNumber().equals("Actual onboarded")) {
-					data.setActualOnboarded(tower.getTowerData().getActualOnboarded());
-				} else if (tower.getTowerNumber().equals("Total Offers Accepted")) {
-					tower.setTowerNumber("Total Offers Accepted");
-					data.setTotalOfferAccepted(tower.getTowerData().getTotalOfferAccepted());
-				} else if (tower.getTowerNumber().equals("Actual Offers Accepted")) {
-					tower.setTowerNumber("Actual Offers Accepted");
-					data.setActualOfferAccepted(tower.getTowerData().getActualOfferAccepted());
-				} else if (tower.getTowerNumber().equals("Total Offers Released")) {
-					tower.setTowerNumber("Total Offers Released");
-					data.setTotalOfferReleased(tower.getTowerData().getTotalOfferReleased());
-				} else if (tower.getTowerNumber().equals("Actual Offers Released")) {
-					tower.setTowerNumber("Actual Offers Released");
-					data.setActualOfferReleased(tower.getTowerData().getActualOfferReleased());
-				}
-				data.setTopManagers(topManagers);
-				dataWrapper.setTowerData(data);
+			towerDetails.add(tower);
+			topManagers.add(tower.getTopManager1());
+			double spiralTarget = 0.0;
+			double occupiedWindow = 0.0;
+			double illuminated = 0.0;
+			double empty = 0.0;
+
+			try {
+				spiralTarget = Double.parseDouble(tower.getSpiralTarget());
+				occupiedWindow = Double.parseDouble(tower.getOccupiedWindow());
+				illuminated = Double.parseDouble(tower.getIlluminatedWindow());
+				empty = Double.parseDouble(tower.getEmptyWindow());
+			} catch (NumberFormatException e) {
+				e.getMessage();
 			}
+			totalOnboarded += spiralTarget;
+			actualOnboarded += occupiedWindow;
+			actualOfferAccepted += illuminated;
+			actualOfferReleased += empty;
+
 		}
+
+		data.setTotalOnboarded(String.valueOf(totalOnboarded));
+		data.setActualOnboarded(String.valueOf(actualOnboarded));
+		data.setActualOfferAccepted(String.valueOf(actualOfferAccepted));
+		data.setActualOfferReleased(String.valueOf(actualOfferReleased));
+		data.setTotalOfferReleased(String.valueOf(Math.floor(actualOfferAccepted / 0.75)));
+		data.setTotalOfferAccepted(String.valueOf(Math.floor(totalOnboarded / 0.85)));
+		data.setTopManagers(topManagers);
+		dataWrapper.setTowerDetails(towerDetails);
+		dataWrapper.setTowerData(data);
+
 		return dataWrapper;
 	}
-
 }
