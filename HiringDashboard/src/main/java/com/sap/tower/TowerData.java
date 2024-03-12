@@ -2,32 +2,34 @@ package com.sap.tower;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class TowerData {
 
 	private String totalOnboarded;
 	private String actualOnboarded;
-	private String totalOfferExtended;
-	private String actualOfferExtended;
+	private String totalOfferReleased;
+	private String actualOfferReleased;
 	private String totalOfferAccepted;
 	private String actualOfferAccepted;
+	@JsonIgnore
 	private List<String> topManagers;
 
 	public TowerData() {
 		super();
 	}
 
-	public TowerData(String totalOnboarded, String actualOnboarded, String totalOfferExtended,
-			String actualOfferExtended, String totalOfferAccepted, String actualOfferAccepted,
+	public TowerData(String totalOnboarded, String actualOnboarded, String totalOfferReleased,
+			String actualOfferReleased, String totalOfferAccepted, String actualOfferAccepted,
 			List<String> topManagers) {
 		super();
 		this.totalOnboarded = totalOnboarded;
 		this.actualOnboarded = actualOnboarded;
-		this.totalOfferExtended = totalOfferExtended;
-		this.actualOfferExtended = actualOfferExtended;
+		this.totalOfferReleased = totalOfferReleased;
+		this.actualOfferReleased = actualOfferReleased;
 		this.totalOfferAccepted = totalOfferAccepted;
 		this.actualOfferAccepted = actualOfferAccepted;
 		this.topManagers = topManagers;
-
 	}
 
 	public String getTotalOnboarded() {
@@ -46,20 +48,20 @@ public class TowerData {
 		this.actualOnboarded = actualOnboarded;
 	}
 
-	public String getTotalOfferExtended() {
-		return totalOfferExtended;
+	public String getTotalOfferReleased() {
+		return totalOfferReleased;
 	}
 
-	public void setTotalOfferExtended(String totalOfferExtended) {
-		this.totalOfferExtended = totalOfferExtended;
+	public void setTotalOfferReleased(String totalOfferReleased) {
+		this.totalOfferReleased = totalOfferReleased;
 	}
 
-	public String getActualOfferExtended() {
-		return actualOfferExtended;
+	public String getActualOfferReleased() {
+		return actualOfferReleased;
 	}
 
-	public void setActualOfferExtended(String actualOfferExtended) {
-		this.actualOfferExtended = actualOfferExtended;
+	public void setActualOfferReleased(String actualOfferReleased) {
+		this.actualOfferReleased = actualOfferReleased;
 	}
 
 	public String getTotalOfferAccepted() {

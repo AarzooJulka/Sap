@@ -50,7 +50,10 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 
 	public void saveDetails(XSSFRow row) {
 		Tower tower = new Tower();
-		if (getStringValue(row.getCell(0)).startsWith("Tower")) {
+		TowerData data = new TowerData();
+		String cellValue = getStringValue(row.getCell(0));
+
+		if (cellValue.startsWith("Tower")) {
 			tower.setTowerNumber(getStringValue(row.getCell(0)));
 			tower.setTowerName(getStringValue(row.getCell(1)));
 			tower.setTowerColor(getStringValue(row.getCell(2)));
@@ -72,24 +75,29 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 			List<Floor> floors = saveFloor(row);
 			tower.setFloorDetails(floors);
 			tower.setSkillDetails(skills);
-		} else if (getStringValue(row.getCell(0)).equalsIgnoreCase("Totals")) {
-			System.out.println("Inside Total");
-			System.out.println(getStringValue(row.getCell(12)));
-			List<String> topManagers = new ArrayList<>();
-			TowerData data = new TowerData();
-			tower.setTowerNumber(getStringValue(row.getCell(0)));
-			data.setTotalOfferAccepted(getStringValue(row.getCell(12)));
-			data.setTotalOnboarded(getStringValue(row.getCell(13)));
-			data.setTotalOfferExtended(getStringValue(row.getCell(14)));
-			data.setActualOfferAccepted(getStringValue(row.getCell(15)));
-			data.setActualOfferExtended(getStringValue(row.getCell(16)));
-			data.setActualOnboarded(getStringValue(row.getCell(17)));
-			topManagers.add(getStringValue(row.getCell(6)));
-			topManagers.add(getStringValue(row.getCell(7)));
-			data.setTopManagers(topManagers);
-			tower.setTowerData(data);
-
+		} else {
+			if (cellValue.equalsIgnoreCase("Total Onboarded")) {
+				tower.setTowerNumber("Total Onboarded");
+				data.setTotalOnboarded(getStringValue(row.getCell(1)));
+			} else if (cellValue.equalsIgnoreCase("Actual onboarded")) {
+				tower.setTowerNumber("Actual onboarded");
+				data.setActualOnboarded(getStringValue(row.getCell(1)));
+			} else if (cellValue.equalsIgnoreCase("Total Offers Accepted")) {
+				tower.setTowerNumber("Total Offers Accepted");
+				data.setTotalOfferAccepted(getStringValue(row.getCell(1)));
+			} else if (cellValue.equalsIgnoreCase("Actual Offers Accepted")) {
+				tower.setTowerNumber("Actual Offers Accepted");
+				data.setActualOfferAccepted(getStringValue(row.getCell(1)));
+			} else if (cellValue.equalsIgnoreCase("Total Offers Released")) {
+				tower.setTowerNumber("Total Offers Released");
+				data.setTotalOfferReleased(getStringValue(row.getCell(1)));
+			} else if (cellValue.equalsIgnoreCase("Actual Offers Released")) {
+				tower.setTowerNumber("Actual Offers Released");
+				data.setActualOfferReleased(getStringValue(row.getCell(1)));
+			}
 		}
+
+		tower.setTowerData(data);
 		super.save(tower);
 	}
 
@@ -131,14 +139,35 @@ public class TowerServiceImpl extends BaseServiceImpl<Tower> implements TowerSer
 			if (tower.getTowerNumber().startsWith("Tower")) {
 				towerDetails.add(tower);
 				dataWrapper.setTowerDetails(towerDetails);
-			} else if (tower.getTowerNumber().equals("Totals")) {
-				data.setActualOfferAccepted(tower.getTowerData().getActualOfferAccepted());
-				data.setActualOfferExtended(tower.getTowerData().getActualOfferExtended());
-				data.setActualOnboarded(tower.getTowerData().getActualOnboarded());
-				data.setTotalOfferAccepted(tower.getTowerData().getTotalOfferAccepted());
-				data.setTotalOfferExtended(tower.getTowerData().getTotalOfferExtended());
-				data.setTotalOnboarded(tower.getTowerData().getTotalOnboarded());
-				data.setTopManagers(tower.getTowerData().getTopManagers());
+			} /*
+				 * else if (tower.getTowerNumber().equals("Totals")) {
+				 * data.setActualOfferAccepted(tower.getTowerData().getActualOfferAccepted());
+				 * data.setActualOfferReleased(tower.getTowerData().getActualOfferReleased());
+				 * data.setActualOnboarded(tower.getTowerData().getActualOnboarded());
+				 * data.setTotalOfferAccepted(tower.getTowerData().getTotalOfferAccepted());
+				 * data.setTotalOfferReleased(tower.getTowerData().getTotalOfferReleased());
+				 * data.setTotalOnboarded(tower.getTowerData().getTotalOnboarded());
+				 * data.setTopManagers(tower.getTowerData().getTopManagers());
+				 * dataWrapper.setTowerData(data); }
+				 */
+			else {
+				if (tower.getTowerNumber().equals("Total Onboarded")) {
+					data.setTotalOnboarded(tower.getTowerData().getTotalOnboarded());
+				} else if (tower.getTowerNumber().equals("Actual onboarded")) {
+					data.setActualOnboarded(tower.getTowerData().getActualOnboarded());
+				} else if (tower.getTowerNumber().equals("Total Offers Accepted")) {
+					tower.setTowerNumber("Total Offers Accepted");
+					data.setTotalOfferAccepted(tower.getTowerData().getTotalOfferAccepted());
+				} else if (tower.getTowerNumber().equals("Actual Offers Accepted")) {
+					tower.setTowerNumber("Actual Offers Accepted");
+					data.setActualOfferAccepted(tower.getTowerData().getActualOfferAccepted());
+				} else if (tower.getTowerNumber().equals("Total Offers Released")) {
+					tower.setTowerNumber("Total Offers Released");
+					data.setTotalOfferReleased(tower.getTowerData().getTotalOfferReleased());
+				} else if (tower.getTowerNumber().equals("Actual Offers Released")) {
+					tower.setTowerNumber("Actual Offers Released");
+					data.setActualOfferReleased(tower.getTowerData().getActualOfferReleased());
+				}
 				dataWrapper.setTowerData(data);
 			}
 		}
