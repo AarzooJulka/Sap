@@ -25,6 +25,7 @@ public class Tower extends BaseEntity {
 	private String illuminatedWindow;
 	private String occupiedWindow;
 	private String windowCount;
+	@JsonIgnore
 	private String target;
 	private List<Floor> floorDetails;
 	private List<Skill> skillDetails;
